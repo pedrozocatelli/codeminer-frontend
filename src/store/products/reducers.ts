@@ -2,9 +2,15 @@ import * as Types from './types';
 
 const INITIAL_STATE = {
   products: null,
-  error: false,
+  vouchers: null,
+  cart: [],
+  error: {
+    products: false,
+    vouchers: false,
+  },
   loading: {
-    fetch: false,
+    fetchProducts: false,
+    fetchVouchers: false,
   },
 };
 
@@ -16,9 +22,18 @@ export default (
     case Types.START_FETCH:
       return { ...state, loading: { ...state.loading, [action.kind]: true } };
     case Types.DONE_FETCH:
-      return { ...state, loading: { ...state.loading, [action.kind]: true } };
+      return { ...state, loading: { ...state.loading, [action.kind]: false } };
     case Types.GET_PRODUCTS:
       return { ...state, products: action.data };
+    case Types.GET_VOUCHERS:
+      return { ...state, vouchers: action.data };
+    case Types.ADD_CART:
+      return { ...state, cart: [...state.cart, action.data] };
+    case Types.SET_ERROR:
+      return {
+        ...state,
+        error: { ...state.error, [action.error]: action.data },
+      };
     default:
       return state;
   }

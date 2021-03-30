@@ -2,7 +2,6 @@ import styled from 'styled-components';
 
 export const Container = styled.div`
   height: 100vh;
-  background: rgb(242, 244, 250) none repeat scroll 0% 0%;
 `;
 
 export const Header = styled.header`
@@ -10,7 +9,7 @@ export const Header = styled.header`
 `;
 
 export const HeaderContent = styled.div`
-  max-width: 1200px;
+  max-width: 1150px;
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -65,6 +64,21 @@ export const Profile = styled.div`
 export const Content = styled.div`
   display: flex;
   flex-direction: row;
-  max-width: 1120px;
+  max-width: 1150px;
   margin: 64px auto;
+  justify-content: space-between;
+`;
+
+export const ItemsContainer = styled.div`
+  width: 60%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-flow: row wrap;
+`;
+
+export const CartContainer = styled.div`
+  width: 30%;
+  display: flex;
+  flex-direction: column;
 `;

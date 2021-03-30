@@ -4,13 +4,12 @@ import 'config/ReactotronConfig';
 
 import Routes from 'routes';
 import { Provider as ReduxProvider } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
 
 import { ToastContainer } from 'react-toastify';
 import GlobalStyle from './styles/global';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { store, persistor } from './store';
+import { store } from './store';
 
 // import Routes from './routes';
 
@@ -23,21 +22,19 @@ const App: React.FC = () => (
   // </Router>
   <>
     <ReduxProvider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <ToastContainer
-          position="top-center"
-          autoClose={4000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-        />
-        <GlobalStyle />
-        <Routes />
-      </PersistGate>
+      <ToastContainer
+        position="top-center"
+        autoClose={4000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+      <GlobalStyle />
+      <Routes />
     </ReduxProvider>
   </>
 );
