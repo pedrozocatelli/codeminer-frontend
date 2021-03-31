@@ -17,7 +17,7 @@ const LoadingScreen: React.FC = () => {
           >
             <g
               transform="translate(0.000000,180.000000) scale(0.100000,-0.100000)"
-              fill="#000000"
+              fill="#d50a1e"
               stroke="none"
             >
               <path

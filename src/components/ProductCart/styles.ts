@@ -14,13 +14,14 @@ export const Content = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  background: #fff;
+  background: #bce899;
   padding: 5px;
   border-radius: 5px;
 `;
 
 export const ImageContainer = styled.div`
   display: flex;
+  position: relative;
   justify-content: center;
   align-items: center;
   width: 35%;
@@ -29,6 +30,18 @@ export const ImageContainer = styled.div`
     width: 80%;
     height: 80%;
     border-radius: 2px;
+  }
+
+  svg {
+    position: absolute;
+    padding: 1px;
+    border-radius: 50%;
+    background: #fe6a7a;
+    color: #fff;
+    transform: rotate(45deg);
+    top: -5px;
+    right: 7px;
+    cursor: pointer;
   }
 `;
 
@@ -39,7 +52,7 @@ export const ItemContent = styled.div`
 
   strong {
     font-weight: bold;
-    color: #8cc152;
+    color: #333;
     font-size: 18px;
 
     & + span {
@@ -56,11 +69,11 @@ export const ItemContent = styled.div`
 
 export const InputNumber = styled.input`
   height: 100%;
-  width: 100px;
-  background: orange;
+  width: 55px;
+  border-radius: 5px;
+  padding: 10px;
+  background: white;
   border: none;
   color: #333;
-  width: 15%;
-  height: 100%;
   margin-left: auto;
 `;

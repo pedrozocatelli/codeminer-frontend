@@ -37,7 +37,7 @@ export const getProducts = (): ThunkAction<
     dispatch({ type: Types.DONE_FETCH, kind: 'fetchProducts' });
     dispatch({ type: Types.SET_ERROR, error: 'products', data: false });
   } catch {
-    dispatch({ type: Types.SET_ERROR, error: 'products', data: true });
+    dispatch(getProducts());
   }
 };
 
@@ -56,27 +56,7 @@ export const getVouchers = (): ThunkAction<
     dispatch({ type: Types.DONE_FETCH, kind: 'fetchVouchers' });
     dispatch({ type: Types.SET_ERROR, error: 'vouchers', data: false });
   } catch {
-    dispatch({ type: Types.SET_ERROR, error: 'vouchers', data: true });
-  }
-};
-
-export const addToCart = (
-  data: Record<string, any>,
-): ThunkAction<void, StoreState, unknown, Action<string>> => async (
-  dispatch,
-) => {
-  try {
-    const newItem = {
-      id: data.id,
-      name: data.name,
-      price: data.price,
-      quantity: 10,
-      image: data.image,
-    };
-
-    dispatch({ type: Types.ADD_CART, data: newItem });
-  } catch {
-    dispatch({ type: Types.SET_ERROR, error: 'vouchers', data: true });
+    dispatch(getVouchers());
   }
 };
 
@@ -99,6 +79,87 @@ export const updateProducts = (
     dispatch({ type: Types.GET_PRODUCTS, data });
   } catch {
     dispatch({ type: Types.SET_ERROR, error: 'products', data: true });
+  }
+};
+
+export const addToCart = (
+  data: Record<string, any>,
+): ThunkAction<void, StoreState, unknown, Action<string>> => async (
+  dispatch,
+) => {
+  try {
+    const state = store.getState() as StoreState;
+    const { cart } = state.products;
+
+    let newCart: Record<string, any>[] = [];
+
+    if (cart) {
+      newCart = cart;
+    }
+
+    const newItem = {
+      id: data.id,
+      name: data.name,
+      price: data.price,
+      quantity: 1,
+      max: data.available,
+      image: data.image,
+    };
+
+    newCart.push(newItem);
+
+    dispatch({ type: Types.ADD_CART, data: newCart });
+  } catch {
+    dispatch({ type: Types.SET_ERROR, error: 'vouchers', data: true });
+  }
+};
+
+export const updateCart = (
+  id: number,
+  quantity: number,
+): ThunkAction<void, StoreState, unknown, Action<string>> => async (
+  dispatch,
+) => {
+  try {
+    const state = store.getState() as StoreState;
+    const { cart } = state.products;
+
+    if (!cart) {
+      return;
+    }
+
+    const data = cart?.map((item) =>
+      item.id === id ? { ...item, quantity: item.quantity - quantity } : item,
+    );
+
+    dispatch({ type: Types.ADD_CART, data });
+  } catch {
+    dispatch({ type: Types.SET_ERROR, error: 'products', data: true });
+  }
+};
+
+export const removeFromCart = (
+  id: number,
+): ThunkAction<void, StoreState, unknown, Action<string>> => async (
+  dispatch,
+) => {
+  try {
+    const state = store.getState() as StoreState;
+    const { cart } = state.products;
+
+    if (!cart) {
+      return;
+    }
+
+    const replenishQuantity = cart.find((a) => a.id === id)?.quantity || 0;
+
+    dispatch(updateProducts(id, -replenishQuantity));
+    const filteredArray = cart.filter((a) => a.id !== id);
+    const newArray = filteredArray.length > 0 ? filteredArray : null;
+
+    dispatch({ type: Types.ADD_CART, data: newArray });
+  } catch {
+    dispatch({ type: Types.SET_ERROR, error: 'vouchers', data: true });
   }
 };
 

@@ -13,16 +13,11 @@ interface Product {
   image: string;
 }
 
-interface VoucherData {
+interface Voucher {
   id: number;
   code: string;
   type: string;
   amount: number;
-  minValue: number;
-}
-
-interface Voucher {
-  data: VoucherData[];
 }
 
 export interface Cart {
@@ -30,13 +25,14 @@ export interface Cart {
   name: string;
   price: number;
   quantity: number;
+  max: number;
   image: string;
 }
 
 export interface ProductsState {
   readonly products: Product[] | null;
-  readonly vouchers: Voucher | null;
-  readonly cart: Cart[] | [];
+  readonly vouchers: Voucher[] | null;
+  readonly cart: Cart[] | null;
 
   readonly error: {
     products: boolean;
@@ -65,12 +61,12 @@ interface GetProducts {
 
 interface AddCart {
   type: typeof ADD_CART;
-  data: Cart;
+  data: Cart[];
 }
 
 interface GetVouchers {
   type: typeof GET_VOUCHERS;
-  data: Voucher;
+  data: Voucher[];
 }
 
 interface SetError {

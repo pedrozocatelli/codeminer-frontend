@@ -10,7 +10,7 @@ export const Container = styled.div<ContainerProps>``;
 export const Content = styled.div`
   flex: 1;
   border-radius: 5px;
-  background: #edf5e4;
+  background: #daf5bc;
 `;
 
 export const Title = styled.div`
@@ -21,6 +21,7 @@ export const Title = styled.div`
   justify-content: center;
   align-items: center;
   padding: 10px;
+  margin-bottom: 10px;
   border-top-right-radius: 5px;
   border-top-left-radius: 5px;
 
@@ -63,5 +64,58 @@ export const CheckoutButton = styled.button`
 
   &:hover {
     background: ${shade(0.1, '#8cc152')};
+  }
+`;
+
+export const EmptyDiv = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  height: 150px;
+
+  img {
+    max-height: 100%;
+    width: auto;
+  }
+`;
+
+export const DiscountContainer = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 15px;
+
+  input {
+    width: 65%;
+
+    :disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    background: #8cc152;
+    color: #fff;
+    padding: 10px 25px;
+    font-weight: bold;
+    font-size: 15px;
+    transition: background-color 0.2s;
+    border-radius: 5px;
+
+    &:hover {
+      background: ${shade(0.1, '#8cc152')};
+    }
+
+    :disabled {
+      cursor: not-allowed;
+      background: ${shade(0.3, '#8cc152')};
+    }
   }
 `;

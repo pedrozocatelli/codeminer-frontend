@@ -11,7 +11,6 @@ import {
   getProducts,
   getVouchers,
   updateProducts,
-  setError,
 } from 'store/products/actions';
 
 import Spin from 'components/Spin';
@@ -31,41 +30,18 @@ import {
 const Main: React.FC = () => {
   const dispatch = useDispatch();
 
-  const { products: productError, vouchers: voucherError } = useSelector(
-    (state: StoreState) => state.products.error,
-  );
-
-  const { products, vouchers } = useSelector(
-    (state: StoreState) => state.products,
-  );
+  const { products } = useSelector((state: StoreState) => state.products);
 
   useEffect(() => {
     dispatch(getProducts());
     dispatch(getVouchers());
   }, [dispatch]);
 
-  useEffect(() => {
-    if (productError || !products) {
-      dispatch(getProducts());
-    }
-    if (voucherError || !vouchers) {
-      dispatch(getVouchers());
-    }
-  }, [dispatch, productError, voucherError, products, vouchers]);
-
-  useEffect(() => {
-    if (products) {
-      dispatch(setError('products'));
-    }
-    if (vouchers) {
-      dispatch(setError('vouchers'));
-    }
-  }, [dispatch, products, vouchers]);
-
   const renderProducts = useCallback(() => {
-    if (products && !productError) {
+    if (products) {
       return products.map((product) => (
         <ProductItem
+          id={product.id}
           name={product.name}
           price={product.price}
           quantity={product.available}
@@ -80,7 +56,7 @@ const Main: React.FC = () => {
         <Spin />
       </div>
     );
-  }, [productError, products, dispatch]);
+  }, [products, dispatch]);
 
   return (
     <Container>

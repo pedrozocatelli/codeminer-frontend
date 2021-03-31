@@ -1,8 +1,10 @@
-import React, { useState, useCallback } from 'react';
-
+import React, { useState, useCallback, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { StoreState } from 'store';
 import { Container, ImageContainer, ItemContent, BuyButton } from './styles';
 
 interface ProductProps {
+  id: number;
   image: string;
   name: string;
   price: number;
@@ -12,6 +14,7 @@ interface ProductProps {
 }
 
 const Product: React.FC<ProductProps> = ({
+  id,
   image,
   name,
   price,
@@ -19,7 +22,17 @@ const Product: React.FC<ProductProps> = ({
   onClick,
   updateProduct,
 }) => {
+  const { cart } = useSelector((state: StoreState) => state.products);
+
   const [added, setAdded] = useState(false);
+
+  useEffect(() => {
+    if (cart) {
+      setAdded(!!cart.find((item) => item.id === id));
+    } else {
+      setAdded(false);
+    }
+  }, [cart, id]);
 
   const handleClick = useCallback(() => {
     if (!added) {
@@ -28,6 +41,7 @@ const Product: React.FC<ProductProps> = ({
       updateProduct();
     }
   }, [added, onClick, updateProduct]);
+
   return (
     <Container>
       <ImageContainer>
@@ -46,7 +60,7 @@ const Product: React.FC<ProductProps> = ({
         </div>
       </ItemContent>
       <BuyButton type="button" added={added} onClick={handleClick}>
-        {added && quantity > 0 ? 'Added' : 'Add to cart'}
+        {added ? 'Added' : 'Add to cart'}
       </BuyButton>
     </Container>
   );

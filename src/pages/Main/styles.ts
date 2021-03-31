@@ -64,13 +64,13 @@ export const Profile = styled.div`
 export const Content = styled.div`
   display: flex;
   flex-direction: row;
-  max-width: 1150px;
+  max-width: 1250px;
   margin: 64px auto;
   justify-content: space-between;
 `;
 
 export const ItemsContainer = styled.div`
-  width: 60%;
+  width: 55%;
   display: flex;
   flex-direction: row;
   justify-content: space-between;

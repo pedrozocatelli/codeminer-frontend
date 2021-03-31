@@ -3,7 +3,7 @@ import * as Types from './types';
 const INITIAL_STATE = {
   products: null,
   vouchers: null,
-  cart: [],
+  cart: null,
   error: {
     products: false,
     vouchers: false,
@@ -28,7 +28,7 @@ export default (
     case Types.GET_VOUCHERS:
       return { ...state, vouchers: action.data };
     case Types.ADD_CART:
-      return { ...state, cart: [...state.cart, action.data] };
+      return { ...state, cart: action.data };
     case Types.SET_ERROR:
       return {
         ...state,

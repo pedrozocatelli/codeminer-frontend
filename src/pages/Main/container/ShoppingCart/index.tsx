@@ -1,49 +1,118 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-nested-ternary */
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useSelector } from 'react-redux';
 import { FaShoppingCart } from 'react-icons/fa';
 import { StoreState } from 'store';
-import { Cart } from 'store/products/types';
 import { calculateShipping } from 'utils/calculateShipping';
 
 import ProductCart from 'components/ProductCart';
-import { Container, Content, Title, Line, CheckoutButton } from './styles';
+import Empty from 'assets/empty.png';
+import { toast } from 'react-toastify';
+import {
+  Container,
+  Content,
+  Title,
+  Line,
+  CheckoutButton,
+  EmptyDiv,
+  DiscountContainer,
+} from './styles';
 
 const ShoppingCart: React.FC = () => {
-  const dispatch = useDispatch();
-
-  const { cart } = useSelector((state: StoreState) => state.products);
+  const { cart, vouchers } = useSelector((state: StoreState) => state.products);
 
   const [total, setTotal] = useState(0);
+  const [discount, setDiscount] = useState('');
+  const [voucher, setVoucher] = useState<Record<string, any>>({});
+  const [voucherCode, setVoucherCode] = useState('');
   const [subTotal, setSubTotal] = useState(0);
   const [shipping, setShipping] = useState(0);
 
   useEffect(() => {
-    if (cart.length > 0) {
-      const cartItems = cart.map((ca: Cart) => {
-        return {
-          price: ca.price,
-          quantity: ca.quantity,
-        };
-      });
-
-      const sum = cartItems.reduce(
+    if (cart && cart.length > 0) {
+      const sum = cart.reduce(
         (n, { price, quantity }) => n + price * quantity,
         0,
       );
-      const weight = cartItems.reduce((n, { quantity }) => n + quantity, 0);
 
-      setShipping(calculateShipping(weight, sum, false));
+      const weight = cart.reduce((n, { quantity }) => n + quantity, 0);
 
+      const hasFreeShipping = voucher && voucher.type === 'shipping';
+      setShipping(calculateShipping(weight, sum, hasFreeShipping));
       setSubTotal(sum);
+      setDiscount(
+        voucher && voucher.type === 'fixed'
+          ? 'US$ 100,00'
+          : voucher && voucher.type === 'percentual'
+          ? '30%'
+          : '',
+      );
+    } else {
+      setTotal(0);
+      setDiscount('');
+      setVoucherCode('');
+      setSubTotal(0);
+      setShipping(0);
     }
-  }, [cart]);
+  }, [cart, cart?.length, voucher]);
 
   useEffect(() => {
     if (subTotal) {
-      setTotal(subTotal + shipping);
+      const hasFixedDiscount = voucher && voucher.type === 'fixed';
+      const hasPercentDiscount = voucher && voucher.type === 'percentual';
+      let calculateTotal = subTotal + shipping;
+
+      if (hasFixedDiscount) calculateTotal -= voucher.amount;
+      if (hasPercentDiscount) calculateTotal *= 1 - voucher.amount / 100;
+
+      setTotal(calculateTotal < 0 ? 0 : calculateTotal);
     }
-  }, [subTotal, shipping]);
+  }, [subTotal, shipping, voucher]);
+
+  const renderCart = useCallback(() => {
+    if (cart && cart.length > 0) {
+      return cart.map((item) => (
+        <ProductCart
+          image={item.image}
+          name={item.name}
+          price={item.price}
+          quantity={item.quantity}
+          max={item.max}
+          id={item.id}
+        />
+      ));
+    }
+    return (
+      <EmptyDiv>
+        <img src={Empty} alt="empty" />
+      </EmptyDiv>
+    );
+  }, [cart]);
+
+  const validateCupom = useCallback(() => {
+    if (voucherCode && vouchers) {
+      const newVoucher =
+        vouchers.find((vou) => vou.code === voucherCode) ||
+        ({} as Record<string, any>);
+      setVoucher(newVoucher);
+
+      if (Object.keys(newVoucher).length === 0) {
+        toast.error('Invalid cupom code');
+        setVoucherCode('');
+      }
+
+      if (
+        Object.keys(newVoucher).length > 0 &&
+        subTotal < 300.5 &&
+        newVoucher.type === 'shipping'
+      ) {
+        toast.warn(
+          'This cupom is valid for purchases above $300,50 (without shipping)',
+        );
+      }
+    }
+  }, [subTotal, voucherCode, vouchers]);
 
   return (
     <Container>
@@ -52,13 +121,24 @@ const ShoppingCart: React.FC = () => {
           <h2>Shopping Cart</h2>
           <FaShoppingCart fontSize={22} />
         </Title>
-        <ProductCart
-          image="https://www.jasminealimentos.com/wp-content/uploads/2017/11/banana-860x485.jpg"
-          name="Produto"
-          price={50}
-          quantity={10}
-        />
-        <Line>
+        {renderCart()}
+        <DiscountContainer>
+          <input
+            width="80"
+            placeholder="Cupom code"
+            disabled={!cart}
+            value={voucherCode}
+            onChange={(e) => setVoucherCode(e.target.value)}
+          />
+          <button
+            type="button"
+            disabled={!cart}
+            onClick={() => validateCupom()}
+          >
+            Apply
+          </button>
+        </DiscountContainer>
+        <Line style={{ marginTop: 10 }}>
           <span>SubTotal</span>
           <span>
             {subTotal
@@ -73,7 +153,8 @@ const ShoppingCart: React.FC = () => {
           <span>Shipping</span>
           <span>
             {shipping === 0
-              ? subTotal > 400
+              ? subTotal > 400 ||
+                (voucher && voucher.type === 'shipping' && subTotal > 300.5)
                 ? 'FREE'
                 : '-'
               : Intl.NumberFormat('pt-BR', {
@@ -84,17 +165,19 @@ const ShoppingCart: React.FC = () => {
         </Line>
         <Line>
           <span>Discount</span>
-          <span>55</span>
+          <span>{discount || '-'}</span>
         </Line>
         <Line>
           <strong>Total</strong>
           <strong>
-            {total
-              ? Intl.NumberFormat('pt-BR', {
+            {total === 0
+              ? subTotal > 1
+                ? 'FREE'
+                : '-'
+              : Intl.NumberFormat('pt-BR', {
                   style: 'currency',
                   currency: 'USD',
-                }).format(Number(total))
-              : '-'}
+                }).format(Number(total))}
           </strong>
         </Line>
       </Content>
