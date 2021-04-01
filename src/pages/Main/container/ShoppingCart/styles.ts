@@ -65,6 +65,11 @@ export const CheckoutButton = styled.button`
   &:hover {
     background: ${shade(0.1, '#8cc152')};
   }
+
+  :disabled {
+    cursor: not-allowed;
+    background: ${shade(0.3, '#8cc152')};
+  }
 `;
 
 export const EmptyDiv = styled.div`

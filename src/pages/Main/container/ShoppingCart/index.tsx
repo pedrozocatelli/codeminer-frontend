@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-curly-newline */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-nested-ternary */
 import React, { useState, useEffect, useCallback } from 'react';
@@ -9,6 +10,7 @@ import { calculateShipping } from 'utils/calculateShipping';
 import ProductCart from 'components/ProductCart';
 import Empty from 'assets/empty.png';
 import { toast } from 'react-toastify';
+
 import {
   Container,
   Content,
@@ -181,7 +183,12 @@ const ShoppingCart: React.FC = () => {
           </strong>
         </Line>
       </Content>
-      <CheckoutButton>Checkout</CheckoutButton>
+      <CheckoutButton
+        onClick={() => toast.success('Success')}
+        disabled={!subTotal}
+      >
+        Checkout
+      </CheckoutButton>
     </Container>
   );
 };
