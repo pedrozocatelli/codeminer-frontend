@@ -22,4 +22,3 @@ $ yarn dev
 //To test
 $ yarn cypress:on
 ```
-The repository is private, if you need access, just e-mail me.
